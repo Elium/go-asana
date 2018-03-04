@@ -247,15 +247,28 @@ func (c *Client) ListTasks(ctx context.Context, opt *Filter) ([]Task, error) {
 	return tasks, nil
 }
 
+func externalQuery(externalID string) string {
+	return fmt.Sprintf("tasks/external:%s", url.PathEscape(externalID))
+}
+
 func (c *Client) GetTaskByExternalID(ctx context.Context, externalID string, opt *Filter) (Task, error) {
 	task := new(Task)
-	err := c.Request(ctx, fmt.Sprintf("tasks/external:%s", url.PathEscape(externalID)), opt, task)
+	err := c.Request(ctx, externalQuery(externalID), opt, task)
 	return *task, err
 }
 
 func (c *Client) GetTask(ctx context.Context, id int64, opt *Filter) (Task, error) {
 	task := new(Task)
 	err := c.Request(ctx, fmt.Sprintf("tasks/%d", id), opt, task)
+	return *task, err
+}
+
+// UpdateTaskByExternalID updates a task.
+//
+// https://asana.com/developers/api-reference/tasks#update
+func (c *Client) UpdateTaskByExternalID(ctx context.Context, externalID string, tu TaskUpdate, opt *Filter) (Task, error) {
+	task := new(Task)
+	_, err := c.request(ctx, "PUT", externalQuery(externalID), tu, nil, opt, task)
 	return *task, err
 }
 
