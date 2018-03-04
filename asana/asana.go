@@ -139,7 +139,7 @@ type (
 	Response struct {
 		Data     interface{} `json:"data,omitempty"`
 		NextPage *NextPage   `json:"next_page,omitempty"`
-		Errors   Errors      `json:"errors,omitempty"`
+		Errors   []Error     `json:"errors,omitempty"`
 	}
 
 	Error struct {
@@ -150,8 +150,8 @@ type (
 	Webhook struct {
 		ID       int64    `json:"id,omitempty"`
 		Resource Resource `json:"resource,omitempty"`
-		Target   string   `json:"target",omitempty"`
-		Active   bool     `json:"active",omitempty`
+		Target   string   `json:"target,omitempty"`
+		Active   bool     `json:"active,omitempty"`
 	}
 
 	Resource struct {
@@ -166,7 +166,10 @@ type (
 	}
 
 	// Errors always has at least 1 element when returned.
-	Errors []Error
+	Errors struct {
+		Errors []Error
+		Code   int
+	}
 )
 
 func (f DoerFunc) Do(req *http.Request) (resp *http.Response, err error) {
@@ -177,9 +180,9 @@ func (e Error) Error() string {
 	return fmt.Sprintf("%v - %v", e.Message, e.Phrase)
 }
 
-func (e Errors) Error() string {
+func (e *Errors) Error() string {
 	var sErrs []string
-	for _, err := range e {
+	for _, err := range e.Errors {
 		sErrs = append(sErrs, err.Error())
 	}
 	return strings.Join(sErrs, ", ")
@@ -428,7 +431,7 @@ func (c *Client) request(ctx context.Context, method string, path string, data i
 	res := &Response{Data: v}
 	err = json.NewDecoder(resp.Body).Decode(res)
 	if len(res.Errors) > 0 {
-		return nil, res.Errors
+		return nil, &Errors{Errors: res.Errors, Code: resp.StatusCode}
 	}
 	return res.NextPage, err
 }
