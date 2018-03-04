@@ -247,6 +247,12 @@ func (c *Client) ListTasks(ctx context.Context, opt *Filter) ([]Task, error) {
 	return tasks, nil
 }
 
+func (c *Client) GetTaskByExternalID(ctx context.Context, externalID string, opt *Filter) (Task, error) {
+	task := new(Task)
+	err := c.Request(ctx, fmt.Sprintf("tasks/external:%s", url.PathEscape(externalID)), opt, task)
+	return *task, err
+}
+
 func (c *Client) GetTask(ctx context.Context, id int64, opt *Filter) (Task, error) {
 	task := new(Task)
 	err := c.Request(ctx, fmt.Sprintf("tasks/%d", id), opt, task)
@@ -265,9 +271,9 @@ func (c *Client) UpdateTask(ctx context.Context, id int64, tu TaskUpdate, opt *F
 // CreateTask creates a task.
 //
 // https://asana.com/developers/api-reference/tasks#create
-func (c *Client) CreateTask(ctx context.Context, fields map[string]string, opts *Filter) (Task, error) {
+func (c *Client) CreateTask(ctx context.Context, fields map[string]interface{}, opts *Filter) (Task, error) {
 	task := new(Task)
-	_, err := c.request(ctx, "POST", "tasks", nil, toURLValues(fields), opts, task)
+	_, err := c.request(ctx, "POST", "tasks", fields, nil, opts, task)
 	return *task, err
 }
 
