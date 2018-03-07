@@ -259,7 +259,7 @@ func TestCreateTask(t *testing.T) {
 		fmt.Fprint(w, `{"data":{"id":1,"notes":"updated notes"}}`)
 	})
 
-	task, err := client.CreateTask(context.Background(), map[string]string{
+	task, err := client.CreateTask(context.Background(), map[string]interface{}{
 		"key1": "value1",
 		"key2": "value2",
 	}, nil)
