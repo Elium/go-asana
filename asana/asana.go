@@ -89,6 +89,14 @@ type (
 		Projects       []Project `json:"projects,omitempty"`
 		DueOn          string    `json:"due_on,omitempty"`
 		DueAt          string    `json:"due_at,omitempty"`
+		Followers      []User    `json:"followers,omitempty"`
+		Liked          bool      `json:"liked,omitempty"`
+		NumHearts      int64     `json:"num_hearts,omitempty"`
+		Hearted        bool      `json:"hearted,omitempty"`
+		ModifiedAt     time.Time `json:"modified_at,omitempty"`
+		NumLikes       int64     `json:"num_likes,omitempty"`
+		// "tags":         []interface {}{},
+		// "workspace":    map[string]interface {}{"id":13218399566047.000000,"name":"wacul.co.jp"},
 	}
 	// TaskUpdate is used to update a task.
 	TaskUpdate struct {
