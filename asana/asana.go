@@ -97,6 +97,11 @@ type (
 		NumLikes       int64     `json:"num_likes,omitempty"`
 		// "tags":         []interface {}{},
 		// "workspace":    map[string]interface {}{"id":13218399566047.000000,"name":"wacul.co.jp"},
+		External External `json:"external,omitempty"`
+	}
+	External struct {
+		ID   string      `json:"id,omitempty"`
+		Data interface{} `json:"data,omitempty"`
 	}
 	// TaskUpdate is used to update a task.
 	TaskUpdate struct {
