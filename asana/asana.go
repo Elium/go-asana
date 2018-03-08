@@ -257,7 +257,7 @@ func (e *Errors) Error() string {
 	for _, err := range e.Errors {
 		sErrs = append(sErrs, err.Error())
 	}
-	return strings.Join(sErrs, ", ")
+	return fmt.Sprintf("code: %d, %s", e.Code, strings.Join(sErrs, ", "))
 }
 
 // NewClient created new asana client with doer.
