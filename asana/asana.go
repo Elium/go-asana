@@ -324,7 +324,7 @@ func (c *Client) ListTasks(ctx context.Context, opt *Filter) ([]Task, error) {
 }
 
 func externalQuery(externalID string) string {
-	return fmt.Sprintf("tasks/external:%s", url.PathEscape(externalID))
+	return fmt.Sprintf("tasks/external:%s", externalID)
 }
 
 func (c *Client) GetTaskByExternalID(ctx context.Context, externalID string, opt *Filter) (Task, error) {
