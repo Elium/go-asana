@@ -95,7 +95,7 @@ type (
 		Hearted        bool      `json:"hearted,omitempty"`
 		ModifiedAt     time.Time `json:"modified_at,omitempty"`
 		NumLikes       int64     `json:"num_likes,omitempty"`
-		// "tags":         []interface {}{},
+		Tags           []Tag     `json:"tags,omitempty"`
 		// "workspace":    map[string]interface {}{"id":13218399566047.000000,"name":"wacul.co.jp"},
 		External External `json:"external,omitempty"`
 	}
