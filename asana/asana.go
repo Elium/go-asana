@@ -366,6 +366,38 @@ func (c *Client) CreateTask(ctx context.Context, fields map[string]interface{}, 
 	return *task, err
 }
 
+// AddTagByExternalID adds a tag to a task.
+//
+// https://asana.com/developers/api-reference/tasks#tags
+func (c *Client) AddTagByExternalID(ctx context.Context, externalID string, tagID int64, opts *Filter) error {
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%s/addTag", externalID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
+	return err
+}
+
+// RemoveTagByExternalID removes a tag to a task.
+//
+// https://asana.com/developers/api-reference/tasks#tags
+func (c *Client) RemoveTagExternalID(ctx context.Context, externalID string, tagID int64, opts *Filter) error {
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%s/removeTag", externalID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
+	return err
+}
+
+// AddTag adds a tag to a task.
+//
+// https://asana.com/developers/api-reference/tasks#tags
+func (c *Client) AddTag(ctx context.Context, taskID int64, tagID int64, opts *Filter) error {
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%d/addTag", taskID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
+	return err
+}
+
+// RemoveTag removes a tag to a task.
+//
+// https://asana.com/developers/api-reference/tasks#tags
+func (c *Client) RemoveTag(ctx context.Context, taskID int64, tagID int64, opts *Filter) error {
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%d/removeTag", taskID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
+	return err
+}
+
 func (c *Client) ListProjectTasks(ctx context.Context, projectID int64, opt *Filter) ([]Task, error) {
 	tasks := new([]Task)
 	err := c.Request(ctx, fmt.Sprintf("projects/%d/tasks", projectID), opt, tasks)
