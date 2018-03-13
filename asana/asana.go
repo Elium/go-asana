@@ -377,7 +377,7 @@ func (c *Client) AddTagByExternalID(ctx context.Context, externalID string, tagI
 // RemoveTagByExternalID removes a tag to a task.
 //
 // https://asana.com/developers/api-reference/tasks#tags
-func (c *Client) RemoveTagExternalID(ctx context.Context, externalID string, tagID int64, opts *Filter) error {
+func (c *Client) RemoveTagByExternalID(ctx context.Context, externalID string, tagID int64, opts *Filter) error {
 	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%s/removeTag", externalID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
 	return err
 }
