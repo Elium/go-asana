@@ -339,6 +339,22 @@ func (c *Client) GetTask(ctx context.Context, id int64, opt *Filter) (Task, erro
 	return *task, err
 }
 
+// DeleteTaskByExternalID deletes a task.
+//
+// https://asana.com/developers/api-reference/tasks#delete
+func (c *Client) DeleteTaskByExternalID(ctx context.Context, externalID string, opt *Filter) error {
+	_, err := c.request(ctx, "DELETE", externalQuery(externalID), nil, nil, opt, nil)
+	return err
+}
+
+// DeleteTask deletes a task.
+//
+// https://asana.com/developers/api-reference/tasks#delete
+func (c *Client) DeleteTask(ctx context.Context, id int64, opt *Filter) error {
+	_, err := c.request(ctx, "DELETE", fmt.Sprintf("tasks/%d", id), nil, nil, opt, nil)
+	return err
+}
+
 // UpdateTaskByExternalID updates a task.
 //
 // https://asana.com/developers/api-reference/tasks#update
