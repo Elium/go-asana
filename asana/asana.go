@@ -370,7 +370,7 @@ func (c *Client) CreateTask(ctx context.Context, fields map[string]interface{}, 
 //
 // https://asana.com/developers/api-reference/tasks#tags
 func (c *Client) AddTagByExternalID(ctx context.Context, externalID string, tagID int64, opts *Filter) error {
-	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%s/addTag", externalID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/external:%s/addTag", externalID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
 	return err
 }
 
@@ -378,7 +378,7 @@ func (c *Client) AddTagByExternalID(ctx context.Context, externalID string, tagI
 //
 // https://asana.com/developers/api-reference/tasks#tags
 func (c *Client) RemoveTagByExternalID(ctx context.Context, externalID string, tagID int64, opts *Filter) error {
-	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%s/removeTag", externalID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/external:%s/removeTag", externalID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
 	return err
 }
 
