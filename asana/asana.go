@@ -271,16 +271,44 @@ func NewClient(doer Doer) *Client {
 	return client
 }
 
-func (c *Client) ListWorkspaces(ctx context.Context) ([]Workspace, error) {
-	workspaces := new([]Workspace)
-	err := c.Request(ctx, "workspaces", nil, workspaces)
-	return *workspaces, err
+func (c *Client) ListWorkspaces(ctx context.Context, opt *Filter) ([]Workspace, error) {
+	workspaces := []Workspace{}
+	for {
+		page := []Workspace{}
+		next, err := c.request(ctx, "GET", "workspaces", nil, nil, opt, &page)
+		if err != nil {
+			return nil, err
+		}
+		workspaces = append(workspaces, page...)
+		if next == nil {
+			break
+		} else {
+			newOpt := *opt
+			opt = &newOpt
+			opt.Offset = next.Offset
+		}
+	}
+	return workspaces, nil
 }
 
 func (c *Client) ListUsers(ctx context.Context, opt *Filter) ([]User, error) {
-	users := new([]User)
-	err := c.Request(ctx, "users", opt, users)
-	return *users, err
+	users := []User{}
+	for {
+		page := []User{}
+		next, err := c.request(ctx, "GET", "users", nil, nil, opt, &page)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, page...)
+		if next == nil {
+			break
+		} else {
+			newOpt := *opt
+			opt = &newOpt
+			opt.Offset = next.Offset
+		}
+	}
+	return users, nil
 }
 
 func (c *Client) ListProjects(ctx context.Context, opt *Filter) ([]Project, error) {
@@ -415,21 +443,63 @@ func (c *Client) RemoveTag(ctx context.Context, taskID int64, tagID int64, opts 
 }
 
 func (c *Client) ListProjectTasks(ctx context.Context, projectID int64, opt *Filter) ([]Task, error) {
-	tasks := new([]Task)
-	err := c.Request(ctx, fmt.Sprintf("projects/%d/tasks", projectID), opt, tasks)
-	return *tasks, err
+	tasks := []Task{}
+	for {
+		page := []Task{}
+		next, err := c.request(ctx, "GET", fmt.Sprintf("projects/%d/tasks", projectID), nil, nil, opt, &page)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, page...)
+		if next == nil {
+			break
+		} else {
+			newOpt := *opt
+			opt = &newOpt
+			opt.Offset = next.Offset
+		}
+	}
+	return tasks, nil
 }
 
 func (c *Client) ListTaskStories(ctx context.Context, taskID int64, opt *Filter) ([]Story, error) {
-	stories := new([]Story)
-	err := c.Request(ctx, fmt.Sprintf("tasks/%d/stories", taskID), opt, stories)
-	return *stories, err
+	stories := []Story{}
+	for {
+		page := []Story{}
+		next, err := c.request(ctx, "GET", fmt.Sprintf("tasks/%d/stories", taskID), nil, nil, opt, &page)
+		if err != nil {
+			return nil, err
+		}
+		stories = append(stories, page...)
+		if next == nil {
+			break
+		} else {
+			newOpt := *opt
+			opt = &newOpt
+			opt.Offset = next.Offset
+		}
+	}
+	return stories, nil
 }
 
 func (c *Client) ListTags(ctx context.Context, opt *Filter) ([]Tag, error) {
-	tags := new([]Tag)
-	err := c.Request(ctx, "tags", opt, tags)
-	return *tags, err
+	tags := []Tag{}
+	for {
+		page := []Tag{}
+		next, err := c.request(ctx, "GET", "tags", nil, nil, opt, &page)
+		if err != nil {
+			return nil, err
+		}
+		tags = append(tags, page...)
+		if next == nil {
+			break
+		} else {
+			newOpt := *opt
+			opt = &newOpt
+			opt.Offset = next.Offset
+		}
+	}
+	return tags, nil
 }
 
 func (c *Client) GetAuthenticatedUser(ctx context.Context, opt *Filter) (User, error) {
