@@ -6,11 +6,10 @@ import (
 	"net/url"
 )
 
-// GetWebhooks gets webhooks.
-//TODO: rename to ListWebhooks
+// ListWebhooks gets webhooks.
 //
 // https://asana.com/developers/api-reference/webhooks#get
-func (c *Client) GetWebhooks(ctx context.Context, opt *Filter) ([]Webhook, error) {
+func (c *Client) ListWebhooks(ctx context.Context, opt *Filter) ([]Webhook, error) {
 	webhooks := []Webhook{}
 	for {
 		page := []Webhook{}
