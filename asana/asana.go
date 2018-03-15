@@ -114,6 +114,19 @@ type (
 		CompletedAt *time.Time `json:"completed_at,omitempty"`
 	}
 
+	Section struct {
+		ID        int64     `json:"id,omitempty"`
+		CreatedAt time.Time `json:"created_at,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Project   Project   `json:"project,omitempty"`
+		Tags      []Tag     `json:"tags,omitempty"`
+		External  External  `json:"external,omitempty"`
+	}
+
+	SectionUpdate struct {
+		Name *string `json:"name,omitempty"`
+	}
+
 	Story struct {
 		ID        int64     `json:"id,omitempty"`
 		CreatedAt time.Time `json:"created_at,omitempty"`
