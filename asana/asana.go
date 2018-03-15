@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 
@@ -271,15 +272,37 @@ func NewClient(doer Doer) *Client {
 	return client
 }
 
-func (c *Client) ListWorkspaces(ctx context.Context, opt *Filter) ([]Workspace, error) {
-	workspaces := []Workspace{}
+func remake(v interface{}) (interface{}, error) {
+	return remakeValue(reflect.ValueOf(v))
+}
+
+func remakeValue(v reflect.Value) (interface{}, error) {
+	if v.Kind() != reflect.Ptr {
+		return nil, errors.New("not pointer")
+	}
+	return reflect.New(v.Type().Elem()).Interface(), nil
+}
+
+func ve(a interface{}) reflect.Value {
+	return reflect.ValueOf(a).Elem()
+}
+
+func appendSliceValue(a1, a2 interface{}) {
+	na := reflect.AppendSlice(ve(a1), ve(a2))
+	ve(a1).Set(na)
+}
+
+func (c *Client) pagenate(ctx context.Context, path string, opt *Filter, v interface{}) error {
 	for {
-		page := []Workspace{}
-		next, err := c.request(ctx, "GET", "workspaces", nil, nil, opt, &page)
+		page, err := remake(v)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		workspaces = append(workspaces, page...)
+		next, err := c.request(ctx, "GET", path, nil, nil, opt, page)
+		if err != nil {
+			return err
+		}
+		reflect.ValueOf(v).Elem().Set(reflect.AppendSlice(reflect.ValueOf(v).Elem(), reflect.ValueOf(page).Elem()))
 		if next == nil {
 			break
 		} else {
@@ -288,67 +311,39 @@ func (c *Client) ListWorkspaces(ctx context.Context, opt *Filter) ([]Workspace, 
 			opt.Offset = next.Offset
 		}
 	}
-	return workspaces, nil
+	return nil
+}
+
+func (c *Client) ListWorkspaces(ctx context.Context, opt *Filter) ([]Workspace, error) {
+	rets := []Workspace{}
+	if err := c.pagenate(ctx, "workspaces", opt, &rets); err != nil {
+		return nil, err
+	}
+	return rets, nil
 }
 
 func (c *Client) ListUsers(ctx context.Context, opt *Filter) ([]User, error) {
-	users := []User{}
-	for {
-		page := []User{}
-		next, err := c.request(ctx, "GET", "users", nil, nil, opt, &page)
-		if err != nil {
-			return nil, err
-		}
-		users = append(users, page...)
-		if next == nil {
-			break
-		} else {
-			newOpt := *opt
-			opt = &newOpt
-			opt.Offset = next.Offset
-		}
+	rets := []User{}
+	if err := c.pagenate(ctx, "users", opt, &rets); err != nil {
+		return nil, err
 	}
-	return users, nil
+	return rets, nil
 }
 
 func (c *Client) ListProjects(ctx context.Context, opt *Filter) ([]Project, error) {
-	projects := []Project{}
-	for {
-		page := []Project{}
-		next, err := c.request(ctx, "GET", "projects", nil, nil, opt, &page)
-		if err != nil {
-			return nil, err
-		}
-		projects = append(projects, page...)
-		if next == nil {
-			break
-		} else {
-			newOpt := *opt
-			opt = &newOpt
-			opt.Offset = next.Offset
-		}
+	rets := []Project{}
+	if err := c.pagenate(ctx, "projects", opt, &rets); err != nil {
+		return nil, err
 	}
-	return projects, nil
+	return rets, nil
 }
 
 func (c *Client) ListTasks(ctx context.Context, opt *Filter) ([]Task, error) {
-	tasks := []Task{}
-	for {
-		page := []Task{}
-		next, err := c.request(ctx, "GET", "tasks", nil, nil, opt, &page)
-		if err != nil {
-			return nil, err
-		}
-		tasks = append(tasks, page...)
-		if next == nil {
-			break
-		} else {
-			newOpt := *opt
-			opt = &newOpt
-			opt.Offset = next.Offset
-		}
+	rets := []Task{}
+	if err := c.pagenate(ctx, "tasks", opt, &rets); err != nil {
+		return nil, err
 	}
-	return tasks, nil
+	return rets, nil
 }
 
 func externalQuery(externalID string) string {
@@ -443,63 +438,27 @@ func (c *Client) RemoveTag(ctx context.Context, taskID int64, tagID int64, opts 
 }
 
 func (c *Client) ListProjectTasks(ctx context.Context, projectID int64, opt *Filter) ([]Task, error) {
-	tasks := []Task{}
-	for {
-		page := []Task{}
-		next, err := c.request(ctx, "GET", fmt.Sprintf("projects/%d/tasks", projectID), nil, nil, opt, &page)
-		if err != nil {
-			return nil, err
-		}
-		tasks = append(tasks, page...)
-		if next == nil {
-			break
-		} else {
-			newOpt := *opt
-			opt = &newOpt
-			opt.Offset = next.Offset
-		}
+	rets := []Task{}
+	if err := c.pagenate(ctx, fmt.Sprintf("projects/%d/tasks", projectID), opt, &rets); err != nil {
+		return nil, err
 	}
-	return tasks, nil
+	return rets, nil
 }
 
 func (c *Client) ListTaskStories(ctx context.Context, taskID int64, opt *Filter) ([]Story, error) {
-	stories := []Story{}
-	for {
-		page := []Story{}
-		next, err := c.request(ctx, "GET", fmt.Sprintf("tasks/%d/stories", taskID), nil, nil, opt, &page)
-		if err != nil {
-			return nil, err
-		}
-		stories = append(stories, page...)
-		if next == nil {
-			break
-		} else {
-			newOpt := *opt
-			opt = &newOpt
-			opt.Offset = next.Offset
-		}
+	rets := []Story{}
+	if err := c.pagenate(ctx, fmt.Sprintf("tasks/%d/stories", taskID), opt, &rets); err != nil {
+		return nil, err
 	}
-	return stories, nil
+	return rets, nil
 }
 
 func (c *Client) ListTags(ctx context.Context, opt *Filter) ([]Tag, error) {
-	tags := []Tag{}
-	for {
-		page := []Tag{}
-		next, err := c.request(ctx, "GET", "tags", nil, nil, opt, &page)
-		if err != nil {
-			return nil, err
-		}
-		tags = append(tags, page...)
-		if next == nil {
-			break
-		} else {
-			newOpt := *opt
-			opt = &newOpt
-			opt.Offset = next.Offset
-		}
+	rets := []Tag{}
+	if err := c.pagenate(ctx, "tags", opt, &rets); err != nil {
+		return nil, err
 	}
-	return tags, nil
+	return rets, nil
 }
 
 func (c *Client) GetAuthenticatedUser(ctx context.Context, opt *Filter) (User, error) {
