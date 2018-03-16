@@ -123,3 +123,35 @@ func (c *Client) RemoveTag(ctx context.Context, taskID int64, tagID int64, opts 
 	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%d/removeTag", taskID), map[string]interface{}{"tag": tagID}, nil, opts, nil)
 	return err
 }
+
+// AddProjectByExternalID adds a project to a task.
+//
+// https://asana.com/developers/api-reference/tasks#projects
+func (c *Client) AddProjectByExternalID(ctx context.Context, externalID string, mu MembershipUpdate, opts *Filter) error {
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/external:%s/addProject", externalID), mu, nil, opts, nil)
+	return err
+}
+
+// RemoveProjectByExternalID removes a project to a task.
+//
+// https://asana.com/developers/api-reference/tasks#projects
+func (c *Client) RemoveProjectByExternalID(ctx context.Context, externalID string, mu MembershipUpdate, opts *Filter) error {
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/external:%s/removeProject", externalID), mu, nil, opts, nil)
+	return err
+}
+
+// AddProject adds a project to a task.
+//
+// https://asana.com/developers/api-reference/tasks#projects
+func (c *Client) AddProject(ctx context.Context, taskID int64, mu MembershipUpdate, opts *Filter) error {
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%d/addProject", taskID), mu, nil, opts, nil)
+	return err
+}
+
+// RemoveProject removes a project to a task.
+//
+// https://asana.com/developers/api-reference/tasks#projects
+func (c *Client) RemoveProject(ctx context.Context, taskID int64, mu MembershipUpdate, opts *Filter) error {
+	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%d/removeProject", taskID), mu, nil, opts, nil)
+	return err
+}

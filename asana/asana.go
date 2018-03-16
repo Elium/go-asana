@@ -76,27 +76,28 @@ type (
 	}
 
 	Task struct {
-		ID             int64     `json:"id,omitempty"`
-		Assignee       *User     `json:"assignee,omitempty"`
-		AssigneeStatus string    `json:"assignee_status,omitempty"`
-		CreatedAt      time.Time `json:"created_at,omitempty"`
-		CreatedBy      User      `json:"created_by,omitempty"` // Undocumented field, but it can be included.
-		Completed      bool      `json:"completed,omitempty"`
-		CompletedAt    time.Time `json:"completed_at,omitempty"`
-		Name           string    `json:"name,omitempty"`
-		Hearts         []Heart   `json:"hearts,omitempty"`
-		Notes          string    `json:"notes,omitempty"`
-		ParentTask     *Task     `json:"parent,omitempty"`
-		Projects       []Project `json:"projects,omitempty"`
-		DueOn          string    `json:"due_on,omitempty"`
-		DueAt          string    `json:"due_at,omitempty"`
-		Followers      []User    `json:"followers,omitempty"`
-		Liked          bool      `json:"liked,omitempty"`
-		NumHearts      int64     `json:"num_hearts,omitempty"`
-		Hearted        bool      `json:"hearted,omitempty"`
-		ModifiedAt     time.Time `json:"modified_at,omitempty"`
-		NumLikes       int64     `json:"num_likes,omitempty"`
-		Tags           []Tag     `json:"tags,omitempty"`
+		ID             int64        `json:"id,omitempty"`
+		Assignee       *User        `json:"assignee,omitempty"`
+		AssigneeStatus string       `json:"assignee_status,omitempty"`
+		CreatedAt      time.Time    `json:"created_at,omitempty"`
+		CreatedBy      User         `json:"created_by,omitempty"` // Undocumented field, but it can be included.
+		Completed      bool         `json:"completed,omitempty"`
+		CompletedAt    time.Time    `json:"completed_at,omitempty"`
+		Name           string       `json:"name,omitempty"`
+		Hearts         []Heart      `json:"hearts,omitempty"`
+		Notes          string       `json:"notes,omitempty"`
+		ParentTask     *Task        `json:"parent,omitempty"`
+		Projects       []Project    `json:"projects,omitempty"`
+		DueOn          string       `json:"due_on,omitempty"`
+		DueAt          string       `json:"due_at,omitempty"`
+		Followers      []User       `json:"followers,omitempty"`
+		Liked          bool         `json:"liked,omitempty"`
+		NumHearts      int64        `json:"num_hearts,omitempty"`
+		Hearted        bool         `json:"hearted,omitempty"`
+		ModifiedAt     time.Time    `json:"modified_at,omitempty"`
+		NumLikes       int64        `json:"num_likes,omitempty"`
+		Tags           []Tag        `json:"tags,omitempty"`
+		Memberships    []Membership `json:"memberships,omitempty"`
 		// "workspace":    map[string]interface {}{"id":13218399566047.000000,"name":"wacul.co.jp"},
 		External External `json:"external,omitempty"`
 	}
@@ -104,6 +105,11 @@ type (
 		ID   string      `json:"id,omitempty"`
 		Data interface{} `json:"data,omitempty"`
 	}
+	Membership struct {
+		Project Project `json:"project,omitempty"`
+		Section Section `json:"section,omitempty"`
+	}
+
 	// TaskUpdate is used to update a task.
 	TaskUpdate struct {
 		Assignee    *string    `json:"assignee,omitempty"`
@@ -114,6 +120,12 @@ type (
 		CompletedAt *time.Time `json:"completed_at,omitempty"`
 	}
 
+	MembershipUpdate struct {
+		ProjectID    int64  `json:"project,omitempty"`
+		InsertAfter  *int64 `json:"insert_after,omitempty"`
+		InsertBefore *int64 `json:"insert_before,omitempty"`
+		Section      *int64 `json:"section,omitempty"`
+	}
 	Section struct {
 		ID        int64     `json:"id,omitempty"`
 		CreatedAt time.Time `json:"created_at,omitempty"`
