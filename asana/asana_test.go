@@ -58,7 +58,7 @@ func TestListWorkspaces(t *testing.T) {
 		]}`)
 	})
 
-	workspaces, err := client.ListWorkspaces(context.Background())
+	workspaces, err := client.ListWorkspaces(context.Background(), &Filter{})
 	if err != nil {
 		t.Errorf("ListWorkspaces returned error: %v", err)
 	}
@@ -165,12 +165,12 @@ func TestUpdateTask(t *testing.T) {
 		if err != nil {
 			t.Fatalf("error reading request body: %v", err)
 		}
-		want := `{"data":{"notes":"updated notes"}}`
+		want := `{"data":{"notes":"updated notes","custom_fields":[{"id":123}]}}`
 		if !reflect.DeepEqual(string(b), want) {
 			t.Errorf("handler received request body %+v, want %+v", string(b), want)
 		}
 
-		fmt.Fprint(w, `{"data":{"id":1,"notes":"updated notes"}}`)
+		fmt.Fprint(w, `{"data":{"id":1,"notes":"updated notes","custom_fields":[{"id":123}]}}`)
 	})
 
 	// TODO: Add this to package API, like go-github, maybe? Think about it first.
@@ -179,14 +179,14 @@ func TestUpdateTask(t *testing.T) {
 	// to store v and returns a pointer to it.
 	String := func(v string) *string { return &v }
 
-	task, err := client.UpdateTask(context.Background(), 1, TaskUpdate{Notes: String("updated notes")}, nil)
+	task, err := client.UpdateTask(context.Background(), 1, TaskUpdate{Notes: String("updated notes"), CustomFields: []CustomField{{ID: 123}}}, nil)
 	if err != nil {
 		t.Errorf("UpdateTask returned error: %v", err)
 	}
 
-	want := Task{ID: 1, Notes: "updated notes"}
+	want := Task{ID: 1, Notes: "updated notes", CustomFields: []CustomField{{ID: 123}}}
 	if !reflect.DeepEqual(task, want) {
-		t.Errorf("UpdateTask returned %+v, want %+v", task, want)
+		t.Errorf("UpdateTask \nreturned :\n%+v,\nwant :\n %+v", task, want)
 	}
 }
 
@@ -240,16 +240,18 @@ func TestCreateTask(t *testing.T) {
 	mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
 		called++
 		testMethod(t, r, "POST")
-		testHeader(t, r, "Content-Type", "application/x-www-form-urlencoded")
+		testHeader(t, r, "Content-Type", "application/json")
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			t.Fatalf("error reading request body: %v", err)
 		}
+		fmt.Printf("\nquery : %v\n", string(b))
 		values, err := url.ParseQuery(string(b))
 		if err != nil {
 			t.Fatalf("error parsing body: %v", err)
 		}
 		want := url.Values{
+
 			"key1": []string{"value1"},
 			"key2": []string{"value2"},
 		}
@@ -299,7 +301,7 @@ func TestGetWebhook(t *testing.T) {
 	}
 }
 
-func TestGetWebhooks(t *testing.T) {
+func TestListWebhooks(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -307,9 +309,9 @@ func TestGetWebhooks(t *testing.T) {
 		fmt.Fprint(w, `{"data":[{"id":1,"resource":{"id":5,"name":"Project X"},"target":"http://site.com/webhook/666","active":true},{"id":2,"resource":{"id":6,"name":"Project Y"},"target":"http://site.com/webhook/555","active":true}]}`)
 	})
 
-	webhooks, err := client.GetWebhooks(context.Background(), nil)
+	webhooks, err := client.ListWebhooks(context.Background(), nil)
 	if err != nil {
-		t.Errorf("GetWebhooks returned error: %v", err)
+		t.Errorf("ListWebhooks returned error: %v", err)
 	}
 
 	want := []Webhook{
@@ -328,7 +330,7 @@ func TestGetWebhooks(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(webhooks, want) {
-		t.Errorf("GetWebhooks returned %+v, want %+v", webhooks, want)
+		t.Errorf("ListWebhooks returned %+v, want %+v", webhooks, want)
 	}
 }
 
