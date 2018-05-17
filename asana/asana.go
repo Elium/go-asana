@@ -113,13 +113,13 @@ type (
 
 	// TaskUpdate is used to update a task.
 	TaskUpdate struct {
-		Assignee     *string       `json:"assignee,omitempty"`
-		Name         *string       `json:"name,omitempty"`
-		Notes        *string       `json:"notes,omitempty"`
-		Hearted      *bool         `json:"hearted,omitempty"`
-		Completed    *bool         `json:"completed,omitempty"`
-		CompletedAt  *time.Time    `json:"completed_at,omitempty"`
-		CustomFields []CustomField `json:"custom_fields,omitempty"`
+		Assignee     *string               `json:"assignee,omitempty"`
+		Name         *string               `json:"name,omitempty"`
+		Notes        *string               `json:"notes,omitempty"`
+		Hearted      *bool                 `json:"hearted,omitempty"`
+		Completed    *bool                 `json:"completed,omitempty"`
+		CompletedAt  *time.Time            `json:"completed_at,omitempty"`
+		CustomFields map[int64]interface{} `json:"custom_fields,omitempty"`
 	}
 
 	MembershipUpdate struct {
@@ -272,13 +272,22 @@ type (
 	}
 
 	CustomField struct {
-		ID          int64  `json:"id,omitempty"`
-		Name        string `json:"name,omitempty"`
-		Description string `json:"description,omitempty"`
-		Type        string `json:"type,omitempty"`
-		EnumOptions string `json:"enum_options,omitempty"`
-		Precision   int64  `json:"precision,omitempty"`
-		TextValue   string `json:"text_value,omitempty"`
+		ID          int64           `json:"id,omitempty"`
+		Name        string          `json:"name,omitempty"`
+		Description string          `json:"description,omitempty"`
+		Type        string          `json:"type,omitempty"`
+		EnumOptions []CFEnumOptions `json:"enum_options,omitempty"`
+		Precision   int64           `json:"precision,omitempty"`
+		TextValue   string          `json:"text_value,omitempty"`
+		NumberValue int64           `json:"number_value,omitempty"`
+		EnumValue   CFEnumOptions   `json:"enum_value,omitempty"`
+	}
+
+	CFEnumOptions struct {
+		ID      int64  `json:"id,omitempty"`
+		Name    string `json:"name,omitempty"`
+		Color   string `json:"color,omitempty"`
+		Enabled bool   `json:"enabled,omitempty"`
 	}
 )
 
