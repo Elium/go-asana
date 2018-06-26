@@ -155,3 +155,20 @@ func (c *Client) RemoveProject(ctx context.Context, taskID int64, mu MembershipU
 	_, err := c.request(ctx, "POST", fmt.Sprintf("tasks/%d/removeProject", taskID), mu, nil, opts, nil)
 	return err
 }
+
+// GetCustomFieldValue Get a custom_field value from a task
+func (t *Task) GetCustomFieldValue(name string) (string, error) {
+	for _, cf := range t.CustomFields {
+		if cf.Name == name {
+			switch cf.Type {
+			case "enum":
+				return cf.EnumValue.Name, nil
+			case "text":
+				return cf.TextValue, nil
+			case "number":
+				return string(cf.NumberValue), nil
+			}
+		}
+	}
+	return "", fmt.Errorf("Custom field '%s' not found", name)
+}
